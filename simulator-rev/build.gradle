@@ -9,7 +9,7 @@ repositories {
     jcenter()
 
     maven {
-        url "http://www.revrobotics.com/content/sw/max/sdk/maven/"
+        url "https://www.revrobotics.com/content/sw/max/sdk/maven/"
     }
 
     maven {
@@ -18,10 +18,10 @@ repositories {
 
 }
 
-def revVersion="1.5.1"
+def revVersion="1.5.4"
 
 dependencies {
     // rev deps
-    compile "com.revrobotics.frc:SparkMax-java:${revVersion}"
+    implementation "com.revrobotics.frc:SparkMax-java:${revVersion}"
     api project(":simulator")
 }
