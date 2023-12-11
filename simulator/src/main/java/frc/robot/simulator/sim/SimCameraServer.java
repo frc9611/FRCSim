@@ -1,11 +1,11 @@
 
 package frc.robot.simulator.sim;
 
-import edu.wpi.cscore.CameraServerJNI;
-import edu.wpi.cscore.UsbCameraInfo;
-import edu.wpi.cscore.VideoEvent;
-import edu.wpi.cscore.VideoMode;
-import edu.wpi.cscore.raw.RawFrame;
+import edu.wpi.first.cscore.CameraServerJNI;
+import edu.wpi.first.cscore.UsbCameraInfo;
+import edu.wpi.first.cscore.VideoEvent;
+import edu.wpi.first.cscore.VideoMode;
+import edu.wpi.first.cscore.raw.RawFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

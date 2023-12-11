@@ -85,8 +85,8 @@ public class MotorStore {
         double kv = voltage / (maxRPM * 2 * Math.PI / 60); // in volts / (rads/second)
         double resistance = voltage / stallCurrent; // R = V / I
         double inertia = .5 * mass * (.5 * diameter * .5 * diameter); // mass of a cylinder is I = .5 * m * r^2
-        // viscousFrictionConstant = 𝑏 = 𝑇 / 𝜔, according to the internet
-        // where 𝜔 is the RPM of the motor
+        // viscousFrictionConstant = (beta) = (T) / (omega), according to the internet
+        // where (omega) is the RPM of the motor
         double viscousFriction = (stallTorque - kt * stallCurrent) / (maxRPM * 2 * Math.PI * 60);
         return new SimDCMotor(model, kt, kv, resistance, inertia);
     }

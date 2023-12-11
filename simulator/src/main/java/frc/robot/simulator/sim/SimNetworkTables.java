@@ -2,6 +2,7 @@
 package frc.robot.simulator.sim;
 
 import edu.wpi.first.networktables.*;
+import frc.robot.simulator.sim.mock.EntryInfo;
 import frc.robot.simulator.sim.utils.NetworkTableValueUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

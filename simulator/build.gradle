@@ -4,16 +4,16 @@ plugins {
 
     id 'java-library'
 
-    id 'com.google.protobuf' version '0.8.12'
+    id 'com.google.protobuf' version '0.9.4'
 }
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.11.4"
+        artifact = "com.google.protobuf:protoc:3.25.1"
     }
     plugins {
         grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.29.0'
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.60.0'
         }
     }
 
@@ -60,12 +60,13 @@ def ejmlVersion="0.38"
 def jacksonVersion="2.10.0"
 
 dependencies {
-    implementation 'net.bytebuddy:byte-buddy:1.14.10'
-    implementation "net.bytebuddy:byte-buddy-agent:1.14.10"
+    implementation "net.bytebuddy:byte-buddy:1.14.5"
+    implementation "net.bytebuddy:byte-buddy-agent:1.14.5"
 
     implementation "edu.wpi.first.wpilibj:wpilibj-java:${wpiVersion}"
     implementation "edu.wpi.first.ntcore:ntcore-java:${wpiVersion}"
     implementation "edu.wpi.first.wpiutil:wpiutil-java:${wpiVersion}"
+    implementation "edu.wpi.first.wpimath:wpimath-java:${wpiVersion}"
 
     implementation "edu.wpi.first.cscore:cscore-java:${wpiVersion}"
     implementation "edu.wpi.first.cameraserver:cameraserver-java:${wpiVersion}"
@@ -81,9 +82,8 @@ dependencies {
     implementation group: 'ch.qos.logback', name:'logback-core', version: '1.2.3'
 
     implementation "javax.annotation:javax.annotation-api:1.2"
-    implementation 'io.grpc:grpc-netty-shaded:1.29.0'
-    implementation 'io.grpc:grpc-protobuf:1.29.0'
-    implementation 'io.grpc:grpc-stub:1.29.0'
+    implementation 'io.grpc:grpc-all:1.60.0'
+
 
     // for config yaml
     implementation 'org.yaml:snakeyaml:1.21'

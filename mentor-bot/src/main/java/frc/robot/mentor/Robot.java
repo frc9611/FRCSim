@@ -74,9 +74,8 @@ public class Robot extends TimedRobot {
         config = new Config();
 
         // Make sure our preferences test works
-        Preferences preferences = Preferences.getInstance();
-        preferences.getString("testKey", "");
-        preferences.putString("testKey", "testValue");
+        Preferences.getString("testKey", "");
+        Preferences.setString("testKey", "testValue");
 
 
         // create some stuff to make sure the sim doesn't crash
@@ -213,15 +212,15 @@ public class Robot extends TimedRobot {
             Trigger manualDriveStyleTrigger = new Trigger(() -> talonDriveSubsystem.getSelectedDriveStyle() == DriveStyle.Manual);
 
             // Velocity drive is the default, use it when the trigger is active
-            velocityDriveStyleTrigger.whenActive(talonDriveSubsystem.getDefaultCommand(), true);
+            velocityDriveStyleTrigger.onTrue(talonDriveSubsystem.getDefaultCommand());
 
             // if manual drive style is selected, switch the drive subsystem to use manual control
-            manualDriveStyleTrigger.whenActive(
+            manualDriveStyleTrigger.onTrue(
                     talonDriveSubsystem
                             .manualDrive(
                                     () -> -driverJoystick.getRawAxis(config.oi.driveForwardAxis),
                                     () -> driverJoystick.getRawAxis(config.oi.driveTurnAxis))
-                    , true);
+            );
 
         }
 

@@ -1,7 +1,7 @@
 package frc.robot.simulator.hal;
 
 import edu.wpi.first.hal.JNIWrapper;
-import edu.wpi.first.wpiutil.RuntimeLoader;
+import edu.wpi.first.util.RuntimeLoader;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;

@@ -2,10 +2,9 @@ package frc.robot.simulator.sim.field.wheeldisplacement;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import frc.robot.simulator.sim.RobotPosition;
 import frc.robot.simulator.sim.SimSPI;
 import frc.robot.simulator.sim.config.SimulatorConfig;
@@ -13,6 +12,7 @@ import frc.robot.simulator.sim.field.FieldSim;
 import frc.robot.simulator.sim.ic2.SimNavX;
 import frc.robot.simulator.sim.motors.MotorStore;
 import frc.robot.simulator.sim.motors.SimMotor;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 
 /**
  * This is a positional simulator based on wheel displacement
@@ -37,8 +37,8 @@ public class WheelDisplacementSim extends FieldSim {
         super.resetRobot();
         Rotation2d rotation = new Rotation2d(simulatorConfig.startPosition.heading);
         odometry = new DifferentialDriveOdometry(
-                rotation,
-                new Pose2d(simulatorConfig.startPosition.y, simulatorConfig.startPosition.x, rotation)
+                rotation,0,0,
+                new Pose2d(simulatorConfig.startPosition.x, simulatorConfig.startPosition.y, rotation)
         );
     }
 

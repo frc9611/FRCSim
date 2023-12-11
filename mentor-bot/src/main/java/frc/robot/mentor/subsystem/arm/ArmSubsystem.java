@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -48,8 +49,10 @@ public class ArmSubsystem extends BitBucketSubsystem {
         leaderTalonMotors.forEach(m -> m.selectProfileSlot(config.positionSlotIndex, config.pidIndex));
 
         // test a solenoid
-        pivetSolenoid = new DoubleSolenoid(0, 0, 1);
-        singleSolenoid = new Solenoid(1, 0);
+
+        // Source: Candinho
+        pivetSolenoid = new DoubleSolenoid(0, PneumaticsModuleType.REVPH, 0, 1);
+        singleSolenoid = new Solenoid(1, PneumaticsModuleType.REVPH, 0);
 
         // color sensor
         colorSensor = new ColorSensorV3(i2cPort);

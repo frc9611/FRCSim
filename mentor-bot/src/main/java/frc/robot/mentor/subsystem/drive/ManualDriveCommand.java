@@ -1,7 +1,7 @@
 package frc.robot.mentor.subsystem.drive;
 
-import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
@@ -13,14 +13,14 @@ public class ManualDriveCommand extends CommandBase {
     private final DoubleSupplier speed;
     private final DoubleSupplier turn;
 
-    public ManualDriveCommand(Subsystem subsystem, SpeedController leftMotor, SpeedController rightMotor, DoubleSupplier speed, DoubleSupplier turn) {
+    public ManualDriveCommand(Subsystem subsystem, MotorController leftMotor, MotorController rightMotor, DoubleSupplier speed, DoubleSupplier turn) {
         addRequirements(subsystem);
+        // we invert our own motors in config, so don't let the differential drive do it
+        rightMotor.setInverted(true);
         differentialDrive = new DifferentialDrive(leftMotor, rightMotor);
 
         // turn off the safety so the differentialDrive will stop whining
         differentialDrive.setSafetyEnabled(false);
-        // we invert our own motors in config, so don't let the differential drive do it
-        differentialDrive.setRightSideInverted(false);
 
         this.speed = speed;
         this.turn = turn;

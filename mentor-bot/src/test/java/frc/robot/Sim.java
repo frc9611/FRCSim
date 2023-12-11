@@ -11,7 +11,7 @@ import java.awt.*;
 import java.io.IOException;
 
 public class Sim {
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws Exception {
         // create a new BitBuckets sim object to respond to simulator events
         Sim sim = new Sim();
 

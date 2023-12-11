@@ -3,17 +3,13 @@ package frc.robot.simulator.hal;
 import java.nio.ByteBuffer;
 
 import edu.wpi.first.networktables.ConnectionInfo;
-import edu.wpi.first.networktables.ConnectionNotification;
-import edu.wpi.first.networktables.EntryInfo;
-import edu.wpi.first.networktables.EntryNotification;
 import edu.wpi.first.networktables.LogMessage;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTableValue;
 import edu.wpi.first.networktables.NetworkTablesJNI;
-import edu.wpi.first.networktables.PersistentException;
-import edu.wpi.first.networktables.RpcAnswer;
-import edu.wpi.first.wpiutil.RuntimeLoader;
+import edu.wpi.first.util.RuntimeLoader;
 import frc.robot.simulator.sim.SimNetworkTables;
+import frc.robot.simulator.sim.mock.EntryInfo;
 
 /**
  * This is a networktables JNI sim, but we don't use it. We use the actual network tables JNI so we can develop locally
@@ -163,8 +159,8 @@ public final class SimNetworkTablesJNI {
     public static int addPolledEntryListener(int poller, int entry, int flags) {
         return SimNetworkTables.addPolledEntryListener(poller, entry, flags);
     }
-    public static native EntryNotification[] pollEntryListener(NetworkTableInstance inst, int poller) throws InterruptedException;
-    public static native EntryNotification[] pollEntryListenerTimeout(NetworkTableInstance inst, int poller, double timeout) throws InterruptedException;
+//    public static native EntryNotification[] pollEntryListener(NetworkTableInstance inst, int poller) throws InterruptedException;
+//    public static native EntryNotification[] pollEntryListenerTimeout(NetworkTableInstance inst, int poller, double timeout) throws InterruptedException;
     public static native void cancelPollEntryListener(int poller);
     public static void removeEntryListener(int entryListener) {
         SimNetworkTables.removeEntryListener(entryListener);
@@ -182,8 +178,8 @@ public final class SimNetworkTablesJNI {
     public static int addPolledConnectionListener(int poller, boolean immediateNotify) {
         return SimNetworkTables.addPolledConnectionListener(poller, immediateNotify);
     }
-    public static native ConnectionNotification[] pollConnectionListener(NetworkTableInstance inst, int poller) throws InterruptedException;
-    public static native ConnectionNotification[] pollConnectionListenerTimeout(NetworkTableInstance inst, int poller, double timeout) throws InterruptedException;
+//    public static native ConnectionNotification[] pollConnectionListener(NetworkTableInstance inst, int poller) throws InterruptedException;
+//    public static native ConnectionNotification[] pollConnectionListenerTimeout(NetworkTableInstance inst, int poller, double timeout) throws InterruptedException;
     public static native void cancelPollConnectionListener(int poller);
     public static void removeConnectionListener(int connListener) {
         SimNetworkTables.removeConnectionListener(connListener);
@@ -201,8 +197,8 @@ public final class SimNetworkTablesJNI {
     public static void createPolledRpc(int entry, byte[] def, int poller) {
         SimNetworkTables.createPolledRpc(entry, def, poller);
     }
-    public static native RpcAnswer[] pollRpc(NetworkTableInstance inst, int poller) throws InterruptedException;
-    public static native RpcAnswer[] pollRpcTimeout(NetworkTableInstance inst, int poller, double timeout) throws InterruptedException;
+//    public static native RpcAnswer[] pollRpc(NetworkTableInstance inst, int poller) throws InterruptedException;
+//    public static native RpcAnswer[] pollRpcTimeout(NetworkTableInstance inst, int poller, double timeout) throws InterruptedException;
     public static native void cancelPollRpc(int poller);
     public static boolean waitForRpcCallQueue(int inst, double timeout) {
         return SimNetworkTables.waitForRpcCallQueue(inst, timeout);
@@ -285,11 +281,11 @@ public final class SimNetworkTablesJNI {
         return SimNetworkTables.isConnected(inst);
     }
 
-    public static native void savePersistent(int inst, String filename) throws PersistentException;
-    public static native String[] loadPersistent(int inst, String filename) throws PersistentException;  // returns warnings
+    public static native void savePersistent(int inst, String filename) throws Exception;
+    public static native String[] loadPersistent(int inst, String filename) throws Exception;  // returns warnings
 
-    public static native void saveEntries(int inst, String filename, String prefix) throws PersistentException;
-    public static native String[] loadEntries(int inst, String filename, String prefix) throws PersistentException;  // returns warnings
+    public static native void saveEntries(int inst, String filename, String prefix) throws Exception;
+    public static native String[] loadEntries(int inst, String filename, String prefix) throws Exception;  // returns warnings
 
     public static native long now();
 

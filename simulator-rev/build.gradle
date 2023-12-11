@@ -18,10 +18,12 @@ repositories {
 
 }
 
+def wpiVersion="2023.4.3"
 def revVersion="1.5.4"
 
 dependencies {
     // rev deps
     implementation "com.revrobotics.frc:SparkMax-java:${revVersion}"
+    implementation "edu.wpi.first.wpiutil:wpiutil-java:${wpiVersion}"
     api project(":simulator")
 }

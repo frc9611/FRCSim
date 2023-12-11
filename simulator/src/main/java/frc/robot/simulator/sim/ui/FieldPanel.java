@@ -66,8 +66,8 @@ public class FieldPanel extends JPanel {
                     // figure out where this RobotPosition goes on our Field image
                     int width = (int) (0.3145536 * 2 / Field.metersPerPixelWidth);
                     int height = (int) (0.3145536 * 2 / Field.metersPerPixelHeight);
-                    int x = (int) (robotPosition.x / Field.metersPerPixelWidth) + (int) Field.imageSize.x / 2;
-                    int y = (int) Field.imageSize.y / 2 - (int) (robotPosition.y / Field.metersPerPixelHeight);
+                    int x = (int) (robotPosition.x / Field.metersPerPixelWidth) + (int) Field.imageSize.getX() / 2;
+                    int y = (int) Field.imageSize.getY() / 2 - (int) (robotPosition.y / Field.metersPerPixelHeight);
                     Rectangle robotRect = new Rectangle(x - width / 2, y - height / 2, width, height);
 
                     // rotate the graphics instance to draw this rect

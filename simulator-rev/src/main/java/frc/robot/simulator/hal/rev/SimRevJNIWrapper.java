@@ -1,9 +1,7 @@
 package frc.robot.simulator.hal.rev;
 
 import com.revrobotics.jni.RevJNIWrapper;
-import edu.wpi.first.wpiutil.RuntimeLoader;
-
-import java.io.IOException;
+import edu.wpi.first.util.RuntimeLoader;
 
 public class SimRevJNIWrapper {
   static boolean libraryLoaded = false;

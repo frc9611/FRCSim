@@ -2,7 +2,7 @@ package frc.robot.simulator;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import edu.wpi.cscore.CameraServerJNI;
+import edu.wpi.first.cscore.CameraServerJNI;
 import edu.wpi.first.hal.*;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Preferences;
@@ -13,8 +13,10 @@ import frc.robot.simulator.sim.preferences.SimPreferences;
 import frc.robot.simulator.sim.utils.VendorUtils;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
+import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.ClassFileLocator;
+import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassReloadingStrategy;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.implementation.FixedValue;
@@ -23,9 +25,13 @@ import net.bytebuddy.pool.TypePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.transform.Source;
 import java.awt.*;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
@@ -34,7 +40,7 @@ public class SimMain {
 
     private static RobotBase robot;
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws Exception {
         // map all the existing JNIs onto simulator versions
         redifineJNIs();
 
@@ -83,9 +89,9 @@ public class SimMain {
      */
     private static void connectToLocalNetworkTable() throws InterruptedException {
         NetworkTableInstance localNetworkTable = NetworkTableInstance.create();
-        localNetworkTable.setServer("localhost", NetworkTableInstance.kDefaultPort);
+        localNetworkTable.setServer("localhost", NetworkTableInstance.kDefaultPort3);
         if (localNetworkTable.isValid()) {
-            localNetworkTable.startClient();
+            localNetworkTable.startClient3("localhost");
 
             // this stupid startClient() function returns before it actually CONNECTS to the server, but if we wait
             // half a second and there is an outlineviewer server, isConnected() below returns true
@@ -93,8 +99,8 @@ public class SimMain {
 
             // if we have a local networktable running (through outlineviewer), connect to that
             if (localNetworkTable.isConnected()) {
-                NetworkTableInstance.getDefault().setServer("localhost", NetworkTableInstance.kDefaultPort);
-                NetworkTableInstance.getDefault().startClient();
+                NetworkTableInstance.getDefault().setServer("localhost", NetworkTableInstance.kDefaultPort3);
+                NetworkTableInstance.getDefault().startClient3("localhost");
             }
             localNetworkTable.stopClient();
         }
@@ -105,7 +111,7 @@ public class SimMain {
      * our simulator versions. These simulator versions must be EXACTLY the same in structure
      * (no new methods or fields) in order for redefine to work.
      */
-    private static void redifineJNIs() {
+    private static void redifineJNIs() throws Exception {
         Instrumentation agent = ByteBuddyAgent.install();
 
         redefineClass(HAL.class, SimHALJNI.class);
@@ -131,11 +137,11 @@ public class SimMain {
         redefineClass(DIOJNI.class, SimDIOJNI.class);
         redefineClass(PWMJNI.class, SimPWMJNI.class);
         redefineClass(I2CJNI.class, SimI2CJNI.class);
-        redefineClass(SolenoidJNI.class, SimSolenoidJNI.class);
+//        redefineClass(SolenoidJNI.class, SimSolenoidJNI.class);
         redefineClass(SimDeviceJNI.class, SimSimDeviceJNI.class);
-        redefineClass(CompressorJNI.class, SimCompressorJNI.class);
+//        redefineClass(CompressorJNI.class, SimCompressorJNI.class);
         redefineClass(PowerJNI.class, SimPowerJNI.class);
-        redefineClass(PDPJNI.class, SimPDPJNI.class);
+//        redefineClass(PDPJNI.class, SimPDPJNI.class);
         redefineClass(EncoderJNI.class, SimEncoderJNI.class);
         redefineClass(SerialPortJNI.class, SimSerialPortJNI.class);
         redefineClass("edu.wpi.first.hal.AddressableLEDJNI", SimAddressableLED.class);
@@ -164,18 +170,16 @@ public class SimMain {
      * so the robot will run.
      */
     private static void redefineCameraServerJNI() {
-        // CameraServerJNI.Helper.setExtractOnStaticLoad(false);
-        // redefineClass(CameraServerJNI.class, SimCameraServerJNI.class);
-
         CameraServerJNI.Helper.setExtractOnStaticLoad(false);
         TypePool typePool = TypePool.Default.ofSystemLoader();
-        TypeDescription typeDescription = typePool.describe("edu.wpi.cscore.CameraServerJNI").resolve();
+        TypeDescription typeDescription = typePool.describe("edu.wpi.first.cscore.CameraServerJNI").resolve();
         new ByteBuddy()
                 .redefine(typeDescription, ClassFileLocator.ForClassLoader.ofSystemLoader())
-                .method(isDeclaredBy(typeDescription)).intercept(MethodDelegation.to(SimCameraServer.class))
                 .make()
                 .load(ClassLoader.getSystemClassLoader(), ClassReloadingStrategy.fromInstalledAgent());
     }
+
+
 
     /**
      * We don't fully redefine the CameraServerJNI yet, we just
@@ -195,28 +199,57 @@ public class SimMain {
                 .load(ClassLoader.getSystemClassLoader(), ClassReloadingStrategy.fromInstalledAgent());
     }
 
-    static void redefineClass(String className, Class simClz) {
-        TypePool typePool = TypePool.Default.ofSystemLoader();
-        TypeDescription typeDescription = typePool.describe(className).resolve();
-        new ByteBuddy()
-                .redefine(typeDescription, ClassFileLocator.ForClassLoader.ofSystemLoader())
-                .method(isDeclaredBy(typeDescription)).intercept(MethodDelegation.to(simClz))
-                .make()
-                .load(ClassLoader.getSystemClassLoader(), ClassReloadingStrategy.fromInstalledAgent());
-    }
-
-    static void redefineClass(Class clz, Class simClz) {
+    public static void redefineClass(String className, Class simClz) {
         try {
-            new ByteBuddy()
-                    .with(TypeValidation.DISABLED)
-                    .redefine(simClz)
-                    .name(clz.getName())
-                    .make()
-                    .load(clz.getClassLoader(), ClassReloadingStrategy.fromInstalledAgent());
-        } catch (Exception e) {
-            log.error("Failed to redefine class " + clz.getName());
-            throw e;
+            ClassLoader classLoader = simClz.getClassLoader();
+            Method findLoadedClassMethod = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
+
+            if(!findLoadedClassMethod.getClass().getPackage().isSealed()) findLoadedClassMethod.setAccessible(true);
+            if(!findLoadedClassMethod.isAccessible()) return;
+            if (findLoadedClassMethod.invoke(classLoader, className) == null) {
+                TypePool typePool = TypePool.Default.ofSystemLoader();
+                TypeDescription typeDescription = typePool.describe(className).resolve();
+                new ByteBuddy()
+                        .redefine(typeDescription, ClassFileLocator.ForClassLoader.ofSystemLoader())
+                        .method(isDeclaredBy(typeDescription)).intercept(MethodDelegation.to(simClz))
+                        .make()
+                        .load(classLoader);
+            } else {
+                System.out.println("Class " + className + " is already loaded.");
+            }
+        } catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
 
+
+
+    public static void redefineClass(Class<?> sourceClass, Class<?> targetClass) throws Exception {
+        ByteBuddyAgent.install();
+        new ByteBuddy()
+                .redefine(sourceClass)
+               // .method(named("methodName")).intercept(MethodDelegation.to(targetClass))
+                .make()
+                .load(sourceClass.getClassLoader(), ClassReloadingStrategy.fromInstalledAgent());
+    }
+
+//    static void redefineClass(Class clz, Class simClz) {
+//        try {
+//
+//
+//
+//
+//            new ByteBuddy()
+//                    .redefine(simClz)
+//                    .name(clz.getName())
+//                    .make()
+//                    .load(simClz.getClassLoader());
+//
+//
+//        } catch (Exception e) {
+//            log.error("Failed to redefine class " + clz.getName());
+//            throw e;
+//        }
+//    }
 }

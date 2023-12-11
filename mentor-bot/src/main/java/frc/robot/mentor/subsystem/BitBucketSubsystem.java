@@ -12,7 +12,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.*;
-import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.config.Config;
@@ -40,7 +40,7 @@ public abstract class BitBucketSubsystem extends SubsystemBase implements Subsys
 	protected final List<CANSparkMax> allSparkMotors = new ArrayList<>();
 	protected final List<CANSparkMax> leaderSparkMotors = new ArrayList<>();
 
-	protected final List<SpeedController> allMotors = new ArrayList<>();
+	protected final List<MotorController> allMotors = new ArrayList<>();
 
 	public BitBucketSubsystem(Config config) {
 		super();
@@ -184,7 +184,7 @@ public abstract class BitBucketSubsystem extends SubsystemBase implements Subsys
 			}
 			motors[motorNum++] = motor;
 			allTalonMotors.add(motor);
-			allMotors.add((SpeedController) motor);
+			allMotors.add((MotorController) motor);
 		}
 
 		return motors;
@@ -205,14 +205,14 @@ public abstract class BitBucketSubsystem extends SubsystemBase implements Subsys
 				leaderSparkMotors.add(motor);
 
 				/* Configure Sensor Source for velocity PID */
-				CANEncoder encoder = motor.getEncoder(EncoderType.kQuadrature, 8192);
+				SparkMaxRelativeEncoder encoder = (SparkMaxRelativeEncoder) motor.getEncoder(SparkMaxRelativeEncoder.Type.kQuadrature, 8192);
 				/* Zero the sensor */
 				encoder.setPosition(0);
 				// brushless motors can't be inverted
 				// encoder.setInverted(settings.sensorPhase);
 
 				/* Set acceleration and vcruise velocity - see documentation */
-				CANPIDController pidController = motor.getPIDController();
+				SparkMaxPIDController pidController = motor.getPIDController();
 				pidController.setSmartMotionMaxVelocity(settings.motionMagicVelocity, config.velocitySlotIndex);
 				pidController.setSmartMotionMaxAccel(settings.motionMagicAcceleration, config.velocitySlotIndex);
 				pidController.setSmartMotionMaxVelocity(settings.motionMagicVelocity, config.positionSlotIndex);
